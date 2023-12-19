@@ -1,0 +1,25 @@
+
+#score-board {
+    margin: 20px auto;
+    text-align: center;
+    width: 50%;
+    display: grid;
+    grid-template-columns: auto auto;
+    #player-1, #player-2 {
+        h3{
+            color: rgb(122, 158, 158);
+        }
+        .score {
+            color: white;   
+        }
+        .logo {
+            color: rgb(122, 158, 158);
+            font-size: 32px;
+        }
+    }
+}
+
+.title-block {
+    text-align: center;
+    color: rgb(122, 158, 158);
+}
