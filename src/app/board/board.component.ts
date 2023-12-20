@@ -25,7 +25,42 @@ export class BoardComponent {
   winner: EventEmitter<string> = new EventEmitter();
   game_over: boolean = false;
 
-  
+  // for styling logs
+  logStyles = {
+    basic: [
+      "background-color: #0b2c59",
+      "color: white",
+      "padding: 2px",
+      "border-radius: 2px"
+    ].join(";"),
+    result: {
+      win: [
+        "background-color: #ffc800",
+        "color: white",
+        "padding: 2px",
+        "border-radius: 2px"
+      ].join(";"),
+      draw: [
+        "background-color: #06cb30",
+        "color: white",
+        "padding: 2px",
+        "border-radius: 2px"
+      ].join(";")
+    },
+    strike: [
+      "background-color: #0b2c59",
+      "color: white",
+      "padding: 2px",
+      "border-radius: 2px"
+    ].join(";"),
+    debug: [
+      "background-color: #d62839",
+      "color: white",
+      "padding: 2px",
+      "border-radius: 2px"
+    ].join(";")
+  }
+
   markCell(row: number, column: number, e: any): void {
     let target = e.target as HTMLElement;
     let isMarked = target.getAttribute('isMarked');
@@ -40,20 +75,27 @@ export class BoardComponent {
       }
       this.input_count++;
       target.setAttribute('isMarked','true');
+      console.info(`%cmarked position ${row},${column} with ${this.getValueAtPosition(row,column)}`,this.logStyles.basic);
     }
+    console.debug(`%cposition ${row},${column} is already marked with ${this.getValueAtPosition(row,column)}`,this.logStyles.debug)
   }
   
   isStrike(): void {
+    let winner = '';
     for (const strike of this.winning_cases) {
       if (this.getValueAtPosition(strike[0].x, strike[0].y) && (this.getValueAtPosition(strike[0].x, strike[0].y) == this.getValueAtPosition(strike[1].x, strike[1].y)) && (this.getValueAtPosition(strike[1].x, strike[1].y) == this.getValueAtPosition(strike[2].x, strike[2].y))) {
         this.freeze();
+        winner = this.getValueAtPosition(strike[0].x, strike[0].y) as string;
+        console.info(`%cstrike at [${strike[0].x},${strike[0].y}]-[${strike[1].x},${strike[1].y}]-[${strike[2].x},${strike[2].y}]`,this.logStyles.strike);
+        console.info(`%c${winner} won`,this.logStyles.result.win);
         this.winner.emit(this.getValueAtPosition(strike[0].x, strike[0].y) as string);
         this.game_over = true;
         break;
       }
     }
-    if(this.input_count == 9) {
+    if(this.input_count == 9 && winner == '') {
       this.freeze();
+      console.info('%cNo one wins',this.logStyles.result.draw);
       this.winner.emit('');
       this.game_over = true;
     }
@@ -68,6 +110,7 @@ export class BoardComponent {
       for(let j=1;j<=3;j++){
         let cell = document.getElementById(`td-${i}-${j}`) as any;
         cell.setAttribute('isMarked','true');
+        console.debug(`%cposition [${i},${j}] is in freeze`,this.logStyles.debug);
       }
     }
   }
@@ -77,11 +120,13 @@ export class BoardComponent {
       let cell = document.getElementById(`td-${pos.x}-${pos.y}`) as any;
       cell.textContent = '';
       cell.setAttribute('isMarked','false');
+      console.debug(`%cclearing value at [${pos.x}, ${pos.y}]`,this.logStyles.debug);
     }
     for(const pos of this.second_player) {
       let cell = document.getElementById(`td-${pos.x}-${pos.y}`) as any;
       cell.textContent = '';
       cell.setAttribute('isMarked','false');
+      console.debug(`%cclearing value at [${pos.x}, ${pos.y}]`,this.logStyles.debug);
     }
     this.game_over = false;
     this.input_count = 1;
