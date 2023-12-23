@@ -1,5 +1,13 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
+/**
+ * Description placeholder
+ * @date 12/20/2023 - 11:42:48 PM
+ *
+ * @export
+ * @class BoardComponent
+ * @typedef {BoardComponent}
+ */
 @Component({
   selector: 'ttt-board',
   templateUrl: './board.component.html',
@@ -8,9 +16,29 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 export class BoardComponent {
 
   // intially we are assigning 'O' to first player and swapping it later on
+  /**
+   * count of inputs
+   *
+   * @type {number}
+   */
   input_count: number = 1;
+  /**
+   * stores the positions marked by first player.
+   *
+   * @type {{ x: number, y: number }[]}
+   */
   first_player: { x: number, y: number }[] = [];
+  /**
+   * stores the positions marked by second player.
+   *
+   * @type {{ x: number, y: number }[]}
+   */
   second_player: { x: number, y: number }[] = [];
+  /**
+   * Array of possible winning cases.
+   *
+   * @type {{ x: number, y: number }[][]}
+   */
   winning_cases: { x: number, y: number }[][] = [
     [{ x: 1, y: 1 }, { x: 1, y: 2 }, { x: 1, y: 3 }], //first row
     [{ x: 2, y: 1 }, { x: 2, y: 2 }, { x: 2, y: 3 }], //second row
@@ -21,11 +49,26 @@ export class BoardComponent {
     [{ x: 1, y: 1 }, { x: 2, y: 2 }, { x: 3, y: 3 }], //top left to bottom right
     [{ x: 3, y: 1 }, { x: 2, y: 2 }, { x: 1, y: 3 }]  //bottom left to top right
   ];
+  /**
+   * Event emitter which emits winner name.
+   *
+   * @type {EventEmitter<string>}
+   */
   @Output()
   winner: EventEmitter<string> = new EventEmitter();
+  /**
+   * If set to true, it represents game over.
+   *
+   * @type {boolean}
+   */
   game_over: boolean = false;
 
   // for styling logs
+  /**
+   * Hold the set of styles used for different logs.
+   *
+   * @type {{ basic: any; result: { win: any; draw: any; }; strike: any; debug: any; }}
+   */
   logStyles = {
     basic: [
       "background-color: #0b2c59",
@@ -61,6 +104,13 @@ export class BoardComponent {
     ].join(";")
   }
 
+  /**
+   * Marks the cell and calls isStrike() when more than 4 inputs are received.
+   *
+   * @param {number} row
+   * @param {number} column
+   * @param {*} e
+   */
   markCell(row: number, column: number, e: any): void {
     let target = e.target as HTMLElement;
     let isMarked = target.getAttribute('isMarked');
@@ -81,6 +131,9 @@ export class BoardComponent {
     console.debug(`%cposition ${row},${column} is already marked with ${this.getValueAtPosition(row, column)}`, this.logStyles.debug)
   }
 
+  /**
+   * To check if there is any strike.
+   */
   isStrike(): void {
     let winner = '';
     for (const strike of this.winning_cases) {
@@ -102,10 +155,20 @@ export class BoardComponent {
     }
   }
 
+  /**
+   * To read the current value of the cell
+   *
+   * @param {number} x
+   * @param {number} y
+   * @returns {(string | undefined | null)}
+   */
   getValueAtPosition(x: number, y: number): string | undefined | null {
     return document.getElementById(`td-${x}-${y}`)?.textContent;
   }
 
+  /**
+   * Freeze all the cells, directive checks for the value of 'isMarked' before executing furthur.
+   */
   freeze(): void {
     for (let i = 1; i <= 3; i++) {
       for (let j = 1; j <= 3; j++) {
@@ -116,6 +179,9 @@ export class BoardComponent {
     }
   }
 
+  /**
+   * Clear all the cells
+   */
   clear() {
     console.group('clearing cells');
     for (let i = 1; i <= 3; i++) {
